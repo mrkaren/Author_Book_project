@@ -1,10 +1,10 @@
 package author;
 
 import author.exception.BookNotFoundException;
+import author.manager.UserManager;
 import author.model.*;
 import author.storage.AuthorStorage;
 import author.storage.BookStorage;
-import author.storage.UserStorage;
 import author.util.DateUtil;
 
 import java.text.ParseException;
@@ -15,10 +15,11 @@ public class AuthorBookTest implements AuthorBookCommands {
     static Scanner scanner = new Scanner(System.in);
     static AuthorStorage authorStorage = new AuthorStorage();
     static BookStorage bookStorage = new BookStorage();
-    static UserStorage userStorage = new UserStorage();
+
+    static UserManager userManager = new UserManager();
 
     public static void main(String[] args) {
-        initData();
+
         boolean isRun = true;
 
         while (isRun) {
@@ -43,7 +44,7 @@ public class AuthorBookTest implements AuthorBookCommands {
     private static void login() {
         System.out.println("please input email");
         String email = scanner.nextLine();
-        User byEmail = userStorage.getByEmail(email);
+        User byEmail = userManager.getUserByEmail(email);
         if (byEmail != null) {
             System.out.println("please input password");
             String password = scanner.nextLine();
@@ -111,7 +112,7 @@ public class AuthorBookTest implements AuthorBookCommands {
     private static void register() {
         System.out.println("please input email");
         String email = scanner.nextLine();
-        User byEmail = userStorage.getByEmail(email);
+        User byEmail = userManager.getUserByEmail(email);
         if (byEmail == null) {
             System.out.println("Please input name");
             String name = scanner.nextLine();
@@ -130,7 +131,8 @@ public class AuthorBookTest implements AuthorBookCommands {
             user.setSurname(surname);
             user.setPassword(password);
             user.setType(UserType.valueOf(type.toUpperCase()));
-            userStorage.add(user);
+            userManager.add(user);
+
             System.out.println("User was registered!");
         } else {
             System.err.println("user with " + email + " already exists");
@@ -256,12 +258,6 @@ public class AuthorBookTest implements AuthorBookCommands {
 
     }
 
-    private static void initData() {
-        authorStorage.initData();
-        bookStorage.initData();
-        userStorage.initData();
-
-    }
 
     private static void deleteBookByAuthor() {
         printAuthorsList();
